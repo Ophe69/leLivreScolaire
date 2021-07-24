@@ -9,13 +9,41 @@ function Books(props){
     const [isLoading, setIsLoging] = useState(true);
     const [dataSource, setDataSource] = useState(null);
     
-    const displayBooks = async () => {
-        const data = await fetch('https://api-dev.lelivrescolaire.fr/graphQL')
-        const response = await data.json();
-        console.log('response', response);
-    }
-    displayBooks();
-
+    useEffect (() => {
+        const displayBooks = async () => { 
+            const data = await fetch('https://api-dev.lelivrescolaire.fr/graphQL', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    query:`
+                        query {
+                            viewer {
+                                books {
+                                    hits {
+                                        id 
+                                        displayTitle 
+                                        url 
+                                        subjects {
+                                            name 
+                                        }
+                                        levels {
+                                            name
+                                        }
+                                        valid
+                                    }
+                                }
+                            }
+                        }
+                    `,
+                    variables: {},
+            })
+        
+    });
+    const response = await data.json();
+    console.log('ce que donne la response', response);
+        }
+        displayBooks()
+    })
     return(
         <SafeAreaView style={styles.container}>
             <ScrollView
