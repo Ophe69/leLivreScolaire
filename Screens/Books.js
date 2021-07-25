@@ -1,14 +1,15 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, StatusBar, SafeAreaView, FlatList,} from 'react-native'
+import { View, Text, Image, ScrollView, StyleSheet, StatusBar, SafeAreaView } from 'react-native'
 import { Card, ListItem, Button, Icon } from 'react-native-elements'
 import { Ionicons } from '@expo/vector-icons';
 
-const URL= https://api-dev.lelivrescolaire.fr/graphQL
+
+
 
 function Books(props){
 
     const [booksList, setBooksList] = useState([]);
-    //const [booksToDisplay, setBooksToDisplay] = ([]);
+    const [booksToDisplay, setBooksToDisplay] = ([]);
     const [isLoading, setIsLoging] = useState(true);
 
     const [title, setTitle] = useState('');
@@ -51,7 +52,7 @@ function Books(props){
     
     setBooksList(response.data.viewer.books.hits);
     setImage(booksList.url);
-    setTitle(booksList[7].displayTitle);
+    setTitle(booksList.displayTitle); //////////////
 
     //console.log(title);
     
@@ -81,8 +82,9 @@ function Books(props){
     function filterByStatus(book) {
     // if valid
     if (book.valid === true) {
-        console.log(book.displayTitle);
-        //console.log(book.url);
+        /* forEach(book)
+        booksToDisplay.push() */
+        //console.log(book.displayTitle);
         return <h1>{book.displayTitle}</h1>
         
     } else {
@@ -90,10 +92,11 @@ function Books(props){
         return false;
     }
     }
-    const booksToDisplay = booksList.filter(filterByStatus);
+    const booksListValid = booksList.filter(filterByStatus);
+    //booksListValid.forEach(book=>console.log("resultat forEach",book));
+    booksListValid.forEach(book=>console.log("resultat forEach",book.displayTitle,book.url ));
     
-
-    //console.log('Nb livres à afficher =', booksToDisplay.length);
+    console.log('Nb livres à afficher =', booksListValid.length);
     //console.log('Nb livres à cacher = ', booksToHide);
 
     /* const booksToDisplaySorted = [];
@@ -110,13 +113,13 @@ function Books(props){
                 contentContainerStyle={styles.contentContainerStyle}> 
 
                 <View style={styles.cards}>
-                    {booksToDisplay.map((book,i)=>(
+                    {booksListValid.map((book,i)=>(
                     <View key={i}>
                         <Card>
-                            <Card.Image source={require('../images/avatar2.png')}>
+                            <Card.Image source={{uri:book.url}}>
                             </Card.Image>
                     
-                            <Card.Title style={styles.title}>{title}</Card.Title>
+                            <Card.Title style={styles.title}>{book.displayTitle}</Card.Title>
                             <Button
                                 title='Ouvrir le livre'
                                 icon={<Icon name='arrow-forward' color='#ffffff' />}
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
     },
     scrollview: {
         flex: 1,
-        //marginTop: 2,
+        marginTop: 80,
         
     },
     contentContainerStyle: {
@@ -156,7 +159,7 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap' 
     },
     cards: {
-        flex: 3,
+        flex: 1,
         display: 'flex',
         flexDirection: 'row', 
         justifyContent: 'flex-start',
