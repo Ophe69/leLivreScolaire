@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, StatusBar, SafeAreaView } from 'react-native'
+import { View, Text, Image, ScrollView, StyleSheet, StatusBar, SafeAreaView, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { Card, ListItem, Button, Icon } from 'react-native-elements'
 import { Ionicons } from '@expo/vector-icons';
+import { red } from 'ansi-colors';
 
 
 
@@ -10,12 +11,15 @@ function Books(props){
 
     const [booksList, setBooksList] = useState([]);
     const [booksToDisplay, setBooksToDisplay] = ([]);
-    const [isLoading, setIsLoging] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     const [title, setTitle] = useState('');
     const [image, setImage] = useState('');
     const [state, setState] = useState(false);
 
+    const navigation = props.navigation
+
+    
     
     useEffect (() => {
         const getBooks = async () => { 
@@ -53,6 +57,7 @@ function Books(props){
     setBooksList(response.data.viewer.books.hits);
     setImage(booksList.url);
     setTitle(booksList.displayTitle); //////////////
+    setIsLoading(false);
 
     //console.log(title);
     
@@ -76,16 +81,15 @@ function Books(props){
         getBooks()
     }, [])
 
-    //viens de déplacer ce bloc hors du hook= pas cahngement
+ /*    //viens de déplacer ce bloc hors du hook= pas cahngement
     var booksToHide = 0;
 
     function filterByStatus(book) {
     // if valid
     if (book.valid === true) {
-        /* forEach(book)
-        booksToDisplay.push() */
+        
         //console.log(book.displayTitle);
-        return <h1>{book.displayTitle}</h1>
+        return true
         
     } else {
         booksToHide++;
@@ -94,9 +98,9 @@ function Books(props){
     }
     const booksListValid = booksList.filter(filterByStatus);
     //booksListValid.forEach(book=>console.log("resultat forEach",book));
-    booksListValid.forEach(book=>console.log("resultat forEach",book.displayTitle,book.url ));
+    //booksListValid.forEach(book=>console.log("resultat forEach",book.displayTitle,book.url ));
     
-    console.log('Nb livres à afficher =', booksListValid.length);
+    console.log('Nb livres à afficher =', booksListValid.length); */
     //console.log('Nb livres à cacher = ', booksToHide);
 
     /* const booksToDisplaySorted = [];
@@ -104,32 +108,43 @@ function Books(props){
         booksToDisplaySorted.push(booksToDisplay[i]);
         console.log(booksToDisplaySorted);
     } */
-
+    console.log('Nb livres à afficher =', booksList.length);
 
     return(
+        
         <SafeAreaView style={styles.container}>
             <ScrollView
                 style={styles.scrollview}
                 contentContainerStyle={styles.contentContainerStyle}> 
-
-                <View style={styles.cards}>
-                    {booksListValid.map((book,i)=>(
+                {isLoading ? (
+        <ActivityIndicator style={styles.activityIndicator}/>
+        ) : (
+                <View style={styles.cardsCountainer}>
+                    {booksList.map((book,i)=>(
                     <View key={i}>
-                        <Card>
+                        <Card 
+                            style={styles.cards}
+                            opacity={book.valid ? 1 : 0.4}
+                            >
                             <Card.Image source={{uri:book.url}}>
                             </Card.Image>
                     
                             <Card.Title style={styles.title}>{book.displayTitle}</Card.Title>
-                            <Button
-                                title='Ouvrir le livre'
-                                icon={<Icon name='arrow-forward' color='#ffffff' />}
-                                buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                            />
+                            <TouchableOpacity 
+                                disabled={book.valid ? false : true} 
+                                style={styles.openBookBtn}
+                                onPress={()=> {navigation.navigate('Chapters', { screen: 'Chapters' });}}
+                                >
+                                <Text style={styles.openBookText}>Ouvrir le livre</Text>
+                                <Icon name='arrow-forward' color='#ffffff' />
+                            </TouchableOpacity>
+                            
                         </Card>
                         
                     </View>
                 ))}
                 </View>
+        )}
                 
                 
 
@@ -148,9 +163,19 @@ const styles = StyleSheet.create({
     },
     scrollview: {
         flex: 1,
-        marginTop: 80,
+        marginTop: 20,
         
     },
+    activityIndicator: {
+        position: 'absolute',
+        left: 20,
+        right: 20,
+        top: 20,
+        bottom: 20,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+
     contentContainerStyle: {
         display: 'flex',
         flexDirection: 'row', 
@@ -158,18 +183,43 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start', 
         flexWrap: 'wrap' 
     },
-    cards: {
-        flex: 1,
+    cardsCountainer: {
+        flex: 0.5,
         display: 'flex',
         flexDirection: 'row', 
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start', 
-        flexWrap: 'wrap' 
+        flexWrap: 'wrap', 
+        justifyContent: 'space-around',
+        alignContent: 'stretch',
+        
+    },
+    cards: {
+        height: 150,
+        width: 100,
+        resizeMode: 'cover'
     },
     title: {
         display: 'flex',
-        color: 'black'
+        color: 'black',
+        marginTop: 10,
 
+    },
+    openBookBtn: {
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'red',
+        marginRight: 50,
+        marginLeft: 0,
+        marginTop: 5,
+        paddingTop: 15,
+        paddingBottom: 0,
+        paddingLeft: 10,
+    },
+    openBookText: {
+        color: 'red',
+        padding: 0,
+        margin: 0,
+
+        
     },
     
 });
