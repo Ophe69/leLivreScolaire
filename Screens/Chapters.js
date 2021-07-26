@@ -1,10 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, StatusBar, SafeAreaView, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, Image, ScrollView, StyleSheet, StatusBar, SafeAreaView, FlatList } from 'react-native';
 import { Card, ListItem, Button, Icon } from 'react-native-elements';
 
 function Chapters(props){
 
-    const [isLoading, setIsLoading] = useState(true);
     const [chaptersList, setChaptersList] = useState([]);
     const [chapterTitle, setChapterTitle] = useState('');
     const [chapterImage, setChapterImage] = useState('');
@@ -21,44 +20,21 @@ function Chapters(props){
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                        query: `
-                            query chapters($bookId:Int){
-                                viewer{
-                                    chapters(bookIds:[$bookId]){
-                                        hits{
-                                            id 
-                                            title
-                                            url 
-                                            valid
-                                        }
-                                    }
-                                }
-                            }`,
+                        query: `query chapters($bookId:Int){viewer{chapters(bookIds:[$bookId]){hits{id title url valid}}}}`,
                         variables: {
                             bookId: 1339497
                         }
-                    
             })
     });
     
     const response = await data.json();
-    //console.log('la response de chapters', response);
-    setIsLoading(false);
     setChaptersList(response.data.viewer.chapters.hits);
-    setChapterTitle(chaptersList.title);
-    setChapterImage(chaptersList.url);
-    console.log('chapterliiiiiist:', chaptersList)
+    console.log('chapterlist:', chaptersList)
     
         }
         getChapters()
     }, [])
 
-    /*const listOfChapters = chaptersList.map((chapter,i)=>{
-        setChapterTitle(chapter.title);
-        setChapterImage(chapter.url);
-        setChapterID(chapter.id);
-    console.log('listOfCHapter', listOfChapters)
-    })  */
 
     return(
     <SafeAreaView style={styles.container}>
@@ -74,32 +50,30 @@ function Chapters(props){
                     <Text>Titre du Livre</Text>
                 </View>     */}
                 
-  
-  
     {chaptersList.map((chapter, i) => {
-      return (
-          <View style={styles.chapterPage}>
+        return (
+            <View key={i} style={styles.chapterPage}>
 
-        <View>
-        <Card
-            opacity={chapter.valid ? 1 : 0.4}
-        >
-        <Card.Title style={{fontSize: 25, color: '#27b4d7'}}>Chapitre {i}</Card.Title>
-        <Card.Divider/>
-        <View key={chapter.id} style={styles.chapterCard}>
-          <Image
-            style={styles.cardImage}
-            resizeMode="cover"
-            source={{ uri: chapter.url }}
-          />
-          <Text style={styles.cardText}>{chapter.title}</Text>
-        </View>
-        </Card>
-</View>
-</View>
-      );
-    })
-  }
+    
+                <Card
+                    opacity={chapter.valid ? 1 : 0.4}
+                    
+                >
+                <Card.Title style={{fontSize: 25, color: '#27b4d7'}}>Chapitre {i}</Card.Title>
+                <Card.Divider/>
+                    <View style={styles.chapterCard}>
+                    <Image
+                        style={styles.cardImage}
+                        resizeMode="cover"
+                        source={{ uri: chapter.url }}
+                    />
+                    <Text style={styles.cardText}>{chapter.title}</Text>
+                    </View>
+                </Card>
+            </View>
+            );
+        })
+    }
             </ScrollView>
         </SafeAreaView>
     );
@@ -139,13 +113,10 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start', 
         flexWrap: 'wrap' 
     },
-    /* chapterPage: {
-        flex: 1,
-        display:'flex',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
+    chapterPage: {
+        backgroundColor: '#27b4d7',
 
-    }, */
+    },
     bookImage: {
         flex: 1,
         display: 'flex',

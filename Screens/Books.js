@@ -9,13 +9,7 @@ import { Card, ListItem, Button, Icon } from 'react-native-elements'
 function Books(props){
 
     const [booksList, setBooksList] = useState([]);
-    const [booksToDisplay, setBooksToDisplay] = ([]);
     const [isLoading, setIsLoading] = useState(true);
-
-    const [title, setTitle] = useState('');
-    const [image, setImage] = useState('');
-    const [state, setState] = useState(false);
-    const [bookID, setBookID] = useState('');
 
     const navigation = props.navigation
 
@@ -44,40 +38,14 @@ function Books(props){
     }, [])
 
 
-    /*var booksToHide = 0;
 
-    function filterByStatus(book) {
-    // if valid
-    if (book.valid === true) {
-        
-        //console.log(book.displayTitle);
-        return true
-        
-    } else {
-        booksToHide++;
-        return false;
-    }
-    }
-    const booksListValid = booksList.filter(filterByStatus);
-    //booksListValid.forEach(book=>console.log("resultat forEach",book));
-    //booksListValid.forEach(book=>console.log("resultat forEach",book.displayTitle,book.url ));
-    
-    console.log('Nb livres à afficher =', booksListValid.length); */
-    //console.log('Nb livres à cacher = ', booksToHide);
-
-    /* const booksToDisplaySorted = [];
-    for(var i =0; i < booksToDisplay.length; i++ ){
-        booksToDisplaySorted.push(booksToDisplay[i]);
-        console.log(booksToDisplaySorted);
-    } */
     console.log('Nb livres à afficher =', booksList.length);
 
     return(
         
         <SafeAreaView style={styles.container}>
             <ScrollView
-                style={styles.scrollview}
-                contentContainerStyle={styles.contentContainerStyle}> 
+                style={styles.scrollview}> 
                 {isLoading ? (
         <ActivityIndicator style={styles.activityIndicator}/>
         ) : (
@@ -92,14 +60,7 @@ function Books(props){
                             </Card.Image>
                     
                             <Card.Title style={styles.title}>{book.displayTitle}</Card.Title>
-                            {/* <TouchableOpacity 
-                                disabled={book.valid ? false : true} 
-                                style={styles.cardBtn}
-                                onPress={()=> {navigation.navigate('Chapters', { screen: 'Chapters' });}}
-                                >
-                                <Text style={styles.openBookText}>Ouvrir le livre</Text>
-                                <Icon name='arrow-forward' color='#ffffff' />
-                            </TouchableOpacity> */}
+                            
                             <Button style={styles.cardBtn}
                                         disabled={book.valid ? false : true} 
                                         type="clear"
@@ -114,10 +75,6 @@ function Books(props){
                 ))}
                 </View>
         )}
-                
-                
-
-    
             </ScrollView>
         </SafeAreaView>
     );
@@ -146,20 +103,20 @@ const styles = StyleSheet.create({
         
     },
 
-    contentContainerStyle: {
+    /* contentContainerStyle: {
         display: 'flex',
         flexDirection: 'row', 
         justifyContent: 'flex-start',
         alignItems: 'flex-start', 
         flexWrap: 'wrap' 
-    },
+    }, */
     cardsCountainer: {
         flex: 1,
         display: 'flex',
         flexDirection: 'row', 
         flexWrap: 'wrap', 
         justifyContent: 'space-around',
-        alignContent: 'stretch',
+        alignItems: 'center',
         
     },
     cards: {
