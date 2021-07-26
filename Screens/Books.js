@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, Image, ScrollView, StyleSheet, StatusBar, SafeAreaView, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { Card, ListItem, Button, Icon } from 'react-native-elements'
-import { Ionicons } from '@expo/vector-icons';
-import { red } from 'ansi-colors';
+
 
 
 
@@ -16,6 +15,7 @@ function Books(props){
     const [title, setTitle] = useState('');
     const [image, setImage] = useState('');
     const [state, setState] = useState(false);
+    const [bookID, setBookID] = useState('');
 
     const navigation = props.navigation
 
@@ -27,62 +27,24 @@ function Books(props){
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    query:`
-                        query {
-                            viewer {
-                                books {
-                                    hits {
-                                        id 
-                                        displayTitle 
-                                        url 
-                                        subjects {
-                                            name 
-                                        }
-                                        levels {
-                                            name
-                                        }
-                                        valid
-                                    }
-                                }
-                            }
-                        }
-                    `,
+                    query:`query {viewer {books {hits {id displayTitle url subjects {name }levels {name} valid}}}}`,
+                                    
                     variables: {},
             })
     });
     
     const response = await data.json();
-    //console.log('la response', response.data.viewer.books.hits[1].displayTitle);
     
     setBooksList(response.data.viewer.books.hits);
-    setImage(booksList.url);
-    setTitle(booksList.displayTitle); //////////////
     setIsLoading(false);
 
-    //console.log(title);
-    
-    //console.log('******** BOOKSLIST******', booksList);
-    //console.log(booksList.length);
 
-    
-
-   
-    
-    /* const booksListValid = booksList.map((book,i)=>{
-            return {title:book.displayTitle, img:book.url, state:book.valid}
-    }) */
-    
-    //console.log('booksList validée', booksListValid);
-
-
-    //setBooksList({response})
-    //console.log('voici la booklist', booksList)
         }
         getBooks()
     }, [])
 
- /*    //viens de déplacer ce bloc hors du hook= pas cahngement
-    var booksToHide = 0;
+
+    /*var booksToHide = 0;
 
     function filterByStatus(book) {
     // if valid
@@ -119,9 +81,9 @@ function Books(props){
                 {isLoading ? (
         <ActivityIndicator style={styles.activityIndicator}/>
         ) : (
-                <View style={styles.cardsCountainer}>
+                <View style={styles.cardsContainer}>
                     {booksList.map((book,i)=>(
-                    <View key={i}>
+                    <View key={book.id}>
                         <Card 
                             style={styles.cards}
                             opacity={book.valid ? 1 : 0.4}
@@ -130,14 +92,21 @@ function Books(props){
                             </Card.Image>
                     
                             <Card.Title style={styles.title}>{book.displayTitle}</Card.Title>
-                            <TouchableOpacity 
+                            {/* <TouchableOpacity 
                                 disabled={book.valid ? false : true} 
-                                style={styles.openBookBtn}
+                                style={styles.cardBtn}
                                 onPress={()=> {navigation.navigate('Chapters', { screen: 'Chapters' });}}
                                 >
                                 <Text style={styles.openBookText}>Ouvrir le livre</Text>
                                 <Icon name='arrow-forward' color='#ffffff' />
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
+                            <Button style={styles.cardBtn}
+                                        disabled={book.valid ? false : true} 
+                                        type="clear"
+                                        title='Extrait'
+                                        titleStyle={{color: "red"}}
+                                        onPress={()=> {navigation.navigate('Chapters', { screen: 'Chapters' });}}
+                                />
                             
                         </Card>
                         
@@ -174,6 +143,7 @@ const styles = StyleSheet.create({
         bottom: 20,
         alignItems: 'center',
         justifyContent: 'center'
+        
     },
 
     contentContainerStyle: {
@@ -184,7 +154,7 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap' 
     },
     cardsCountainer: {
-        flex: 0.5,
+        flex: 1,
         display: 'flex',
         flexDirection: 'row', 
         flexWrap: 'wrap', 
@@ -195,31 +165,22 @@ const styles = StyleSheet.create({
     cards: {
         height: 150,
         width: 100,
-        resizeMode: 'cover'
+
     },
     title: {
         display: 'flex',
         color: 'black',
-        marginTop: 10,
+        marginTop: 15,
 
     },
-    openBookBtn: {
+    cardBtn: {
         borderRadius: 20,
         borderWidth: 1,
         borderColor: 'red',
-        marginRight: 50,
-        marginLeft: 0,
+        margin: 20,
         marginTop: 5,
-        paddingTop: 15,
-        paddingBottom: 0,
-        paddingLeft: 10,
-    },
-    openBookText: {
-        color: 'red',
         padding: 0,
-        margin: 0,
-
-        
     },
+
     
 });

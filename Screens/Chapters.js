@@ -42,12 +42,12 @@ function Chapters(props){
     });
     
     const response = await data.json();
-    console.log('la response de chapters', response);
+    //console.log('la response de chapters', response);
     setIsLoading(false);
-    setChaptersList(response.data.viewer.chapters.hits)
-    /* setChapterTitle(response.data.viewer.chapters.hits.title);
-    setChapterImage(response.url); */
-    //console.log('chapterliiiiiist:', chapterList)
+    setChaptersList(response.data.viewer.chapters.hits);
+    setChapterTitle(chaptersList.title);
+    setChapterImage(chaptersList.url);
+    console.log('chapterliiiiiist:', chaptersList)
     
         }
         getChapters()
@@ -65,37 +65,41 @@ function Chapters(props){
             <ScrollView
                 style={styles.scrollview}
                 contentContainerStyle={styles.contentContainerStyle}> 
-                {isLoading ? (
-        <ActivityIndicator style={styles.activityIndicator}/>
-        ) : (
-                <View style={styles.bookImage}>
+                
+                {/* <View style={styles.bookImage}>
                     <Image
                         source={require('../images/avatar1.png')}
                         size={150}
                     />
-                </View>
+                    <Text>Titre du Livre</Text>
+                </View>     */}
                 
-        )}
-
-        {/* <Card>
-  <Card.Title>CARD WITH DIVIDER</Card.Title>
-  <Card.Divider/>
-  {
-    users.map((u, i) => {
+  
+  
+    {chaptersList.map((chapter, i) => {
       return (
-        <View key={i} style={styles.user}>
+          <View style={styles.chapterPage}>
+
+        <View>
+        <Card
+            opacity={chapter.valid ? 1 : 0.4}
+        >
+        <Card.Title style={{fontSize: 25, color: '#27b4d7'}}>Chapitre {i}</Card.Title>
+        <Card.Divider/>
+        <View key={chapter.id} style={styles.chapterCard}>
           <Image
-            style={styles.image}
+            style={styles.cardImage}
             resizeMode="cover"
-            source={{ uri: u.avatar }}
+            source={{ uri: chapter.url }}
           />
-          <Text style={styles.name}>{u.name}</Text>
+          <Text style={styles.cardText}>{chapter.title}</Text>
         </View>
+        </Card>
+</View>
+</View>
       );
     })
   }
-</Card> */}
-            
             </ScrollView>
         </SafeAreaView>
     );
@@ -108,10 +112,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: StatusBar.currentHeight,
+        display:'flex',
+    
     },
     scrollview: {
         flex: 1,
         marginTop: 20,
+        display: 'flex',
+        flexDirection:'column',
         
     },
     activityIndicator: {
@@ -131,7 +139,15 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start', 
         flexWrap: 'wrap' 
     },
+    /* chapterPage: {
+        flex: 1,
+        display:'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+
+    }, */
     bookImage: {
+        flex: 1,
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
@@ -151,6 +167,32 @@ const styles = StyleSheet.create({
         color: 'black',
         marginTop: 10,
 
+    },
+    chapterCard: {
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        
+
+    },
+
+    cardImage: {
+        height: 100,
+        width: 100,
+        padding: 5,
+
+    },
+
+    cardText: {
+        height: 100,
+        width: 200,
+        marginTop: 10,
+        marginRight: 20,
+        marginLeft: 20,
+        fontSize: 15,
+        paddingTop: 20,
+        
     },
     
 });
