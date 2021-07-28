@@ -6,6 +6,7 @@ import {
   StatusBar,
   SafeAreaView,
   ActivityIndicator,
+  FlatList
 } from "react-native"
 import { Card, Button } from "react-native-elements"
 
@@ -13,7 +14,6 @@ function Books(props) {
   const [booksList, setBooksList] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
-  const navigation = props.navigation
 
   const getBooks = async () => {
     const data = await fetch("https://api-dev.lelivrescolaire.fr/graphQL", {
@@ -41,35 +41,33 @@ function Books(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
         {isLoading ? (
           <ActivityIndicator style={styles.activityIndicator} />
         ) : (
           <View style={styles.cardsContainer}>
-            {booksList.map((book, i) => (
-              <View key={book.id}>
-                <Card style={styles.cards} opacity={book.valid ? 1 : 0.4}>
-                  <Card.Image source={{ uri: book.url }}/>
-
-                  <Card.Title style={styles.title}>{book.displayTitle}</Card.Title>
-
-                  <Button
-                    style={styles.cardBtn}
-                    disabled={!book.valid}
-                    type="clear"
-                    title="Extrait"
-                    titleStyle={{ color: "red" }}
-                    // TODO: Lambdas in JSX are forbidden. Here's why: https://stackoverflow.com/a/36677798
-                    onPress={() => {
-                      navigation.navigate("Chapters", { screen: "Chapters" })
-                    }}
-                  />
-                </Card>
+            <FlatList 
+            data={booksList}
+            numColumns={2}
+            renderItem={({item}) => (
+              <View style={styles.cards}>
+                <Card opacity={item.valid ? 1 : 0.4}>
+                        <Card.Image source={{ uri: item.url }}/>
+                        <Card.Title style={styles.title}>{item.displayTitle}</Card.Title>
+                      <Button
+                        style={styles.cardBtn}
+                        disabled={item.valid ? false : true}
+                        type="clear"
+                        title="Extrait"
+                        titleStyle={{ color: "red" }}
+                        onPress={() => props.navigation.navigate("Chapitres")}
+                      />
+                    </Card>
               </View>
-            ))}
+            )} 
+            keyExtractor={(item) => item.id.toString()}
+            />
           </View>
         )}
-      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -98,13 +96,12 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
+    justifyContent: "center",
     alignItems: "center",
+    flexWrap: "wrap",
   },
   cards: {
-    height: 150,
-    width: 100,
+    width: "50%",
   },
   title: {
     display: "flex",

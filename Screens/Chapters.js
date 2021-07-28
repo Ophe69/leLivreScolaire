@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { View, Text, Image, ScrollView, StyleSheet, StatusBar, SafeAreaView } from "react-native"
+import { View, Text, Image, ScrollView, StyleSheet, StatusBar, SafeAreaView, FlatList, Button} from "react-native"
 import { Card } from "react-native-elements"
 
-const Chapters = () => {
+
+const Chapters = (props) => {
   const [chaptersList, setChaptersList] = useState([])
+
 
   const getChapters = useCallback(async () => {
     const data = await fetch("https://api-dev.lelivrescolaire.fr/graphQL", {
@@ -27,40 +29,45 @@ const Chapters = () => {
     getChapters()
   }, [])
 
+
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollview} contentContainerStyle={styles.contentContainerStyle}>
-        {/* <View style={styles.bookImage}>
-                    <Image
-                        source={require('../images/avatar1.png')}
-                        size={150}
-                    />
-                    <Text>Titre du Livre</Text>
-                </View>     */}
 
-        {
-            // TODO: Using a map for an unknown number of elements to show is a bad idea. Here's why: https://stackoverflow.com/a/48104178. How would you adapt this code?
-            chaptersList.map((chapter, i) => {
-          return (
-            <View key={i} style={styles.chapterPage}>
-              <Card opacity={chapter.valid ? 1 : 0.4}>
-                <Card.Title style={{ fontSize: 25, color: "#27b4d7" }}>Chapitre {i}</Card.Title>
-                <Card.Divider />
-                <View style={styles.chapterCard}>
-                  <Image
-                    style={styles.cardImage}
-                    resizeMode="cover"
-                    source={{ uri: chapter.url }}
-                  />
-                  <Text style={styles.cardText}>{chapter.title}</Text>
-                </View>
-              </Card>
-            </View>
-          )
-        })}
-      </ScrollView>
+      <FlatList 
+        data={chaptersList}
+        renderItem={({item}) => (
+          <View style={styles.chapterPage}>
+            <Card
+                    opacity={item.valid ? 1 : 0.4}
+                    
+                >
+                <Card.Title style={{fontSize: 25, color: '#27b4d7'}}>Chapitre </Card.Title>
+                <Card.Divider/>
+                    <View style={styles.chapterCard}>
+                    <Image
+                        style={styles.cardImage}
+                        resizeMode="cover"
+                        source={{ uri: item.url }}
+                    />
+                    <Text style={styles.cardText}>{item.title}</Text>
+                    
+                    </View>
+                    <Button
+                        style={styles.cardBtn}
+                        disabled={item.valid ? false : true}
+                        type="clear"
+                        title="Voir la leçon"
+                        titleStyle={{ color: "blue" }}
+                        onPress={() => props.navigation.navigate("Leçons")}
+                      />
+                </Card>
+          </View>
+        )} 
+        keyExtractor={(item) => item.id.toString()}
+        />
     </SafeAreaView>
-  )
+  );
 }
 
 export default Chapters
@@ -118,6 +125,13 @@ const styles = StyleSheet.create({
     color: "black",
     marginTop: 10,
   },
+  image: {
+    display: "flex",
+  },
+  item: {
+    backgroundColor: "blue",
+  },
+
   chapterCard: {
     flex: 1,
     display: "flex",
@@ -137,7 +151,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginRight: 20,
     marginLeft: 20,
-    fontSize: 15,
+    fontSize: 17,
     paddingTop: 20,
+  },
+  cardBtn: {
+    borderRadius: 20,
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "blue",
+    backgroundColor: "blue",
+    margin: 20,
+    marginTop: 5,
+    padding: 0,
   },
 })
